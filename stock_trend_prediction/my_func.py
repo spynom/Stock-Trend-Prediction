@@ -3,6 +3,7 @@ import datetime as dt
 import numpy as np
 import pandas as pd
 import os
+from sklearn.model_selection import train_test_split
 
 
 class Dataset:
@@ -31,9 +32,14 @@ class Dataset:
         return self
 
     def fill_missing_value(self):
-        self.dataset = self.dataset.copy().ffill()
+        self.dataset = self.dataset.copy().ffill().sort_values(by=["date"])
         return self
 
-    def save_data(self):
-        self.dataset.to_csv(os.path.join(os.getcwd(), "data", "interim", "data.csv"),index=False)
+    def save_data(self,train_size=0.8):
+        train_size = int(self.dataset.shape[0] * train_size)
+        train_data = self.dataset[:train_size]
+        test_data = self.dataset[train_size:]
+        train_data.to_csv(os.path.join(os.getcwd(), "data", "interim", "train.csv"),index=False)
+        test_data = test_data.to_csv(os.path.join(os.getcwd(), "data", "interim", "test.csv"),index=False)
+
 
